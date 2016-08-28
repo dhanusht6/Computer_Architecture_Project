@@ -1,0 +1,64 @@
+L4:LOADI   R12,#8                   # Number of rounds
+LOAD       R2,0(R0)                 # R0 is the pointer to the data
+ADDI 	   R0,R0,#1
+LOAD 	   R3,0(R0)
+ADDI 	   R0,R0,#1
+LOAD 	   R4,0(R0)
+ADDI 	   R0,R0,#1
+LOAD 	   R5,0(R0)
+ADDI 	   R0,R0,#1
+L1:LOAD    R6,0(R1)                 # R1 is pointer to the sub-keys
+ADDI 	   R1,R1,#1
+LOAD 	   R7,0(R1)
+ADDI 	   R1,R1,#1
+LOAD 	   R8,0(R1)
+ADDI 	   R1,R1,#1
+LOAD 	   R9,0(R1)
+ADDI 	   R1,R1,#1
+LOAD 	   R10,0(R1)
+ADDI 	   R1,R1,#1
+LOAD 	   R11,0(R1)
+ADDI 	   R1,R1,#1                 # All the data and the sub-keys are loaded and ready for the operation
+SUBI 	   R12,R12,#1               # to decrement the loop counter
+L2:MULMOD  R6,R6,R2                 # fourteen operations of the first eight round
+ADDMOD     R7,R7,R3
+ADDMOD     R8,R8,R4
+MULMOD     R9,R9,R5
+XOR        R2,R6,R8
+XOR        R3,R7,R9
+MULMOD     R2,R2,R10
+ADDMOD     R3,R3,R2
+MULMOD     R4,R11,R3
+ADDMOD 	   R5,R2,R4
+XOR    	   R2,R6,R4
+XOR    	   R3,R8,R4
+XOR    	   R4,R7,R5
+XOR    	   R5,R9,R5
+BZ     	   R12  ,L3                # checking whether the 8 loop are over
+BZ     	   R15  ,L1
+L3:LOAD    R6,0(R1)                # loading the data for the final half round
+ADDI 	   R1,R1,#1
+LOAD 	   R7,0(R1)
+ADDI 	   R1,R1,#1
+LOAD 	   R8,0(R1)
+ADDI 	   R1,R1,#1
+LOAD 	   R9,0(R1)
+ADDI 	   R1,R1,#1
+ADD        R13,R15,R3
+MULMOD     R2,R2,R6                # four operation of the final round
+ADDMOD     R3,R4,R7
+ADDMOD     R4,R13,R8
+MULMOD     R5,R5,R9
+SUBI       R0,R0,#4
+STORE      R2,0(R0)                # storing the results in the data memory
+ADDI       R0,R0,#1
+STORE      R3,0(R0)
+ADDI       R0,R0,#1
+STORE      R4,0(R0)
+ADDI       R0,R0,#1
+STORE      R5,0(R0)
+ADDI       R0,R0,#1
+SUBI       R1,R1,52               # repointing the pointer to the start of the subkeys for the next block
+SUBI       R14,R14,#1             # decrement the count of the no of blocks
+BP         R14, L4
+HALT                              # Terminate the program
